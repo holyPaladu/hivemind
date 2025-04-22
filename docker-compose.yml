@@ -15,10 +15,30 @@ services:
       - ./user/.env
     depends_on:
       - pg-db
+      - kafka
     networks:
       - app-networks
     volumes:
       - ./user:/app
+      - /app/node_modules
+    command: pnpm start
+    restart: always
+
+  auth:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./auth/.env
+    depends_on:
+      - pg-db
+      - kafka
+    networks:
+      - app-networks
+    volumes:
+      - ./auth:/app
       - /app/node_modules
     command: pnpm start
     restart: always
@@ -37,5 +57,26 @@ services:
     networks:
       - app-networks
 
+  kafka:
+    image: docker.io/bitnami/kafka:3.9
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    volumes:
+      - "kafka_data:/bitnami"
+    environment:
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKAJS_NO_PARTITIONER_WARNING=1
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+    networks:
+      - app-networks
+
 volumes:
   pgdata:
+  kafka_data:
