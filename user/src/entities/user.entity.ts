@@ -18,24 +18,14 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, default: 'Guest' })
   username: string;
 
-  @Column({ type: 'varchar', length: 255, unique: true })
-  email: string;
-
-  @Column({ type: 'varchar', length: 255 })
-  password: string;
+  @Column({ type: 'varchar', length: 255, unique: true, nullable: true })
+  email?: string;
 
   @Column({ type: 'varchar', length: 500, nullable: true })
   avatar?: string;
-
-  @Column({
-    type: 'enum',
-    enum: ['client', 'freelancer', 'guest'],
-    default: 'guest',
-  })
-  role: 'client' | 'freelancer' | 'guest';
 
   @OneToOne(() => Profile, (profile) => profile.user)
   @JoinColumn()
