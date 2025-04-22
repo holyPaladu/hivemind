@@ -1,0 +1,41 @@
+version: "3.8"
+
+networks:
+  app-networks:
+    driver: bridge
+
+services:
+  user:
+    build:
+      context: ./user
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./user/.env
+    depends_on:
+      - pg-db
+    networks:
+      - app-networks
+    volumes:
+      - ./user:/app
+      - /app/node_modules
+    command: pnpm start
+    restart: always
+
+  pg-db:
+    image: postgres:15
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: general
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-networks
+
+volumes:
+  pgdata:
