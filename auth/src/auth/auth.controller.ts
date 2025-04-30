@@ -1,7 +1,27 @@
-import { Controller } from '@nestjs/common';
+import { Body, Controller, Post, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { CreateUserDto, UserDto } from './dto/user.dto';
+import { NoFilesInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('Authorization')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Post('register')
+  @UseInterceptors(NoFilesInterceptor())
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'User register' })
+  @ApiBody({ type: CreateUserDto })
+  @ApiResponse({ status: 201, description: 'Successful register' })
+  async register(@Body() bd: CreateUserDto): Promise<UserDto> {
+    return this.authService.register(bd);
+  }
 }

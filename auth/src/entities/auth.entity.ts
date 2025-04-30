@@ -1,3 +1,4 @@
+import { UserRole } from 'src/auth/dto/user.dto';
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('users')
@@ -13,8 +14,8 @@ export class User {
 
   @Column({
     type: 'enum',
-    enum: ['client', 'freelancer', 'guest'],
-    default: 'guest',
+    enum: UserRole,
+    default: UserRole.GUEST,
   })
-  role: 'client' | 'freelancer' | 'guest';
+  role: UserRole;
 }

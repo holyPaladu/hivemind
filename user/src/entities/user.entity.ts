@@ -11,7 +11,6 @@ import { Skill } from './skill.entity';
 import { UserSettings } from './setting.entity';
 import { Activity } from './activity.entity';
 import { JobHistory } from './history.entity';
-// import { Portfolio } from './portfolio.entity';
 
 @Entity('users')
 export class User {
