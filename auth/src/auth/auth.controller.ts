@@ -9,6 +9,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { LoginDto, LoginResponseDto } from './dto/login.dto';
 
 @ApiTags('Authorization')
 @Controller('auth')
@@ -23,5 +24,15 @@ export class AuthController {
   @ApiResponse({ status: 201, description: 'Successful register' })
   async register(@Body() bd: CreateUserDto): Promise<UserDto> {
     return this.authService.register(bd);
+  }
+
+  @Post('login')
+  @UseInterceptors(NoFilesInterceptor())
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'User Login' })
+  @ApiBody({ type: LoginDto })
+  @ApiResponse({ status: 200, description: 'Successful login' })
+  async login(@Body() bd: LoginDto): Promise<LoginResponseDto> {
+    return this.authService.login(bd);
   }
 }
